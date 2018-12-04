@@ -1,0 +1,17 @@
+{
+  "name": "credentials-auth-wallet",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Piotr \"Xeno\" Adamczyk",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node ."
+  },
+  "dependencies": {
+    "ethers": "^4.0.15",
+    "js-sha512": "^0.8.0",
+    "prompt": "^1.0.0",
+    "random-seed": "^0.3.0"
+  }
+}
