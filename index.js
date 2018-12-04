@@ -25,7 +25,7 @@ const app = async () => {
         process.exit();
     }
 
-    console.log("\nThis software is highly experimental and keys or mnemonics generated with it should not be used in production environment, you are using it ON YOUR OWN RISK!\n");
+    console.log("\nThis software is highly experimental and keys or mnemonics generated with it SHOULD NOT BE USED with real Ether, you are using it ON YOUR OWN RISK!\n");
 
     const agreeRisk = await prompt([
         {
@@ -73,7 +73,7 @@ const app = async () => {
     const hash = sha512(details.username + details.password);
 
     if(details.type === "mnemonic") {
-        console.log("\nUnlocked mnemonic:\n" + bip39.entropyToMnemonic(hash.substr(0, 32)) + "\n");
+        console.log("\nMnemonic:\n" + bip39.entropyToMnemonic(hash.substr(0, 32)) + "\n");
     } else {
         const rand = randomSeed.create(hash);
         const privateKeyBuffer = Buffer.alloc(32, 0);
@@ -82,9 +82,8 @@ const app = async () => {
         }
         const privateKey = "0x" + privateKeyBuffer.toString("hex");
         const wallet = new ethers.Wallet(privateKey);
-        console.log("\nUnlocked wallet:");
-        console.log({ address: wallet.address, privateKey: wallet.privateKey });
-        console.log();
+        console.log("\nAddress: " + wallet.address);
+        console.log("Private key: " + wallet.privateKey + "\n");
 
     }
 
