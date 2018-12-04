@@ -29,7 +29,7 @@ const app = async () => {
 
     const agreeRisk = await prompt([
         {
-            message: "Do you agree",
+            message: "Do you agree?",
             name: "agree",
             type: "confirm",
             default: false
@@ -44,7 +44,7 @@ const app = async () => {
 
     const details = await prompt([
         {
-            message: "Account type",
+            message: "Account type:",
             name: "type",
             type: "list",
             choices: [
@@ -59,12 +59,12 @@ const app = async () => {
             ]
         },
         {
-            message: "Your username",
+            message: "Your username:",
             name: "username",
             type: "input"
         },
         {
-            message: "Your password",
+            message: "Your password:",
             name: "password",
             type: "password"
         }
