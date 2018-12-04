@@ -1,6 +1,6 @@
 # credentials-auth-wallet
 
-A simple CLI application serving as a PoC, which allows you to generate an Ethereum wallet from traditional credentials (username and password) without storing anything anywhere.
+A simple CLI application serving as a PoC, which allows you to generate an Ethereum wallet from traditional credentials (username and password) without storing anything anywhere. It was developed in 15 minutes or so.
 
 ## How to use
 I am assuming you already have `yarn`, but you may use `npm` if you want.
