@@ -8,8 +8,8 @@ prompt.start();
 const schema = {
     properties: {
       username: {
-        pattern: /^\S{10,}$/,
-        message: 'Username must contain more than 10 non-whitespace characters',
+        pattern: /^\S{8,}$/,
+        message: 'Username must contain more than 8 non-whitespace characters',
         required: true
       },
       password: {
