@@ -1,35 +1,95 @@
-const prompt = require("prompt");
+const inquirer = require("inquirer");
 const randomSeed = require('random-seed');
 const { sha512 } = require('js-sha512');
 const ethers = require('ethers');
+const bip39 = require('bip39');
 
-prompt.start();
+const prompt = inquirer.createPromptModule();
 
-const schema = {
-    properties: {
-      username: {
-        pattern: /^\S{8,}$/,
-        message: 'Username must contain more than 8 non-whitespace characters',
-        required: true
-      },
-      password: {
-        pattern: /^(?=.*[A-Z])(?=.*[!@#$&*-_])(?=.*[0-9])(?=.*[a-z]).{12,}$/,
-        message: 'Password must be at least 12 characters long, must contain one digit, one uppercase letter, one lowercase letter and one special char',
-        required: true,
-        hidden: true
-      },
+const app = async () => {
+
+    console.log("\ncredentials-auth-wallet by Piotr Adamczyk\n");
+
+    // ----
+
+    const agree = await prompt([{
+        message: "Hello stranger, please tell me who you are.", name: "agree", type: "list", choices: [
+            { name: "I am a regular Ethereum user.", value: false },
+            { name: "I am an investor with tons of Ether.", value: false },
+            { name: "I am a developer and I know what I am doing. I am here to help.", value: true }
+        ]
+    }]);
+
+    if (!agree.agree) {
+        console.log("\nThis is not for you. Please delete the local copy of this software right now.\n");
+        process.exit();
     }
-  };
 
-prompt.get(schema, (err, result) => {
-    const hash = sha512(result.username + result.password);
-    const rand = randomSeed.create(hash);
-    const privateKeyBuffer = Buffer.alloc(32, 0);
-    for(let i = 0; i < privateKeyBuffer.length; i++) {
-        privateKeyBuffer[i] = rand.range(256);
+    console.log("\nThis software is highly experimental and keys or mnemonics generated with it should not be used in production environment, you are using it ON YOUR OWN RISK!\n");
+
+    const agreeRisk = await prompt([
+        {
+            message: "Do you agree",
+            name: "agree",
+            type: "confirm",
+            default: false
+        }]);
+
+    if (!agreeRisk.agree) {
+        console.log("\nThis is not for you. Please delete the local copy of this software right now.\n");
+        process.exit();
     }
-    const privateKey = "0x" + privateKeyBuffer.toString("hex");
-    const wallet = new ethers.Wallet(privateKey);
-    console.log("Unlocked wallet: ");
-    console.log({ address: wallet.address, privateKey: wallet.privateKey});
-});
+
+    console.log("\nOk, I can show you what I do!\n");
+
+    const details = await prompt([
+        {
+            message: "Account type",
+            name: "type",
+            type: "list",
+            choices: [
+                {
+                    name: "12-word mnemonic phrase",
+                    value: "mnemonic"
+                },
+                {
+                    name: "Raw private key",
+                    value: "privatekey"
+                }
+            ]
+        },
+        {
+            message: "Your username",
+            name: "username",
+            type: "input"
+        },
+        {
+            message: "Your password",
+            name: "password",
+            type: "password"
+        }
+    ]);
+
+    const hash = sha512(details.username + details.password);
+
+    if(details.type === "mnemonic") {
+        console.log("\nUnlocked mnemonic:\n" + bip39.entropyToMnemonic(hash.substr(0, 32)) + "\n");
+    } else {
+        const rand = randomSeed.create(hash);
+        const privateKeyBuffer = Buffer.alloc(32, 0);
+        for (let i = 0; i < privateKeyBuffer.length; i++) {
+            privateKeyBuffer[i] = rand.range(256);
+        }
+        const privateKey = "0x" + privateKeyBuffer.toString("hex");
+        const wallet = new ethers.Wallet(privateKey);
+        console.log("\nUnlocked wallet:");
+        console.log({ address: wallet.address, privateKey: wallet.privateKey });
+        console.log();
+
+    }
+
+    // ----
+
+}
+
+app();
