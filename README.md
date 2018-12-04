@@ -9,5 +9,5 @@ I am assuming you already have `yarn`, but you may use `npm` if you want.
 - use `yarn start` to start the cli interface
 - proceed with given instructions
 
-## Credits
-download13 for [Blockies library](https://github.com/download13/blockies), I recycled a lot of its code in BloCLIes
+## Shout-out to
+- download13 for [Blockies library](https://github.com/download13/blockies), I recycled a lot of its code in BloCLIes
