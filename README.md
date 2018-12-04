@@ -7,5 +7,4 @@ I am assuming you already have `yarn`, but you may use `npm` if you want.
 - clone the project using `git` and enter its directory
 - install dependencies using `yarn install`
 - use `yarn start` to start the cli interface
-- enter desired username and password
-- procedurally generated private key and wallet address will be displayed
+- proceed with given instructions
