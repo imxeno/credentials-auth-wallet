@@ -3,8 +3,68 @@ const randomSeed = require('random-seed');
 const { sha512 } = require('js-sha512');
 const ethers = require('ethers');
 const bip39 = require('bip39');
+const showBloclie = require('./lib/bloclies');
 
 const prompt = inquirer.createPromptModule();
+
+const login = async () => {
+    const details = await prompt([
+        {
+            message: "Account type:",
+            name: "type",
+            type: "list",
+            choices: [
+                {
+                    name: "12-word mnemonic phrase",
+                    value: "mnemonic"
+                },
+                {
+                    name: "Raw private key",
+                    value: "privatekey"
+                }
+            ]
+        },
+        {
+            message: "Your username:",
+            name: "username",
+            type: "input"
+        },
+        {
+            message: "Your password:",
+            name: "password",
+            type: "password"
+        }
+    ]);
+
+    const hash = sha512(details.username + details.password);
+
+    if (details.type === "mnemonic") {
+        const mnemonic = bip39.entropyToMnemonic(hash.substr(0, 32));
+        showBloclie({ seed: mnemonic });
+        const agreeBloclie = await prompt({ name: "bloclie", message: "Is this your BloCLIe?", type: "confirm" });
+        if (agreeBloclie.bloclie) {
+            console.log("\nMnemonic:\n" + mnemonic + "\n");
+        } else {
+            console.log("\nYou misspelled your account details. Try again.\n");
+        }
+    } else {
+        const rand = randomSeed.create(hash);
+        const privateKeyBuffer = Buffer.alloc(32, 0);
+        for (let i = 0; i < privateKeyBuffer.length; i++) {
+            privateKeyBuffer[i] = rand.range(256);
+        }
+        const privateKey = "0x" + privateKeyBuffer.toString("hex");
+        const wallet = new ethers.Wallet(privateKey);
+        showBloclie({ seed: wallet.address });
+        const agreeBloclie = await prompt({ name: "bloclie", message: "Is this your BloCLIe?", type: "confirm" });
+        if (agreeBloclie.bloclie) {
+            console.log("\nAddress: " + wallet.address);
+            console.log("Private key: " + wallet.privateKey + "\n");
+        } else {
+            console.log("\nYou misspelled your account details. Try again.\n");
+        }
+    }
+}
 
 const app = async () => {
 
@@ -42,50 +102,7 @@ const app = async () => {
 
     console.log("\nOk, I can show you what I do!\n");
 
-    const details = await prompt([
-        {
-            message: "Account type:",
-            name: "type",
-            type: "list",
-            choices: [
-                {
-                    name: "12-word mnemonic phrase",
-                    value: "mnemonic"
-                },
-                {
-                    name: "Raw private key",
-                    value: "privatekey"
-                }
-            ]
-        },
-        {
-            message: "Your username:",
-            name: "username",
-            type: "input"
-        },
-        {
-            message: "Your password:",
-            name: "password",
-            type: "password"
-        }
-    ]);
-
-    const hash = sha512(details.username + details.password);
-
-    if(details.type === "mnemonic") {
-        console.log("\nMnemonic:\n" + bip39.entropyToMnemonic(hash.substr(0, 32)) + "\n");
-    } else {
-        const rand = randomSeed.create(hash);
-        const privateKeyBuffer = Buffer.alloc(32, 0);
-        for (let i = 0; i < privateKeyBuffer.length; i++) {
-            privateKeyBuffer[i] = rand.range(256);
-        }
-        const privateKey = "0x" + privateKeyBuffer.toString("hex");
-        const wallet = new ethers.Wallet(privateKey);
-        console.log("\nAddress: " + wallet.address);
-        console.log("Private key: " + wallet.privateKey + "\n");
-
-    }
+    login();
 
     // ----
 
